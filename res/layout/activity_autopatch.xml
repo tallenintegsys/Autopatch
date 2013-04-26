@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0099cc"
+    android:orientation="vertical"
+    tools:context=".AutopatchActivity" >
+
+    <ImageView
+        android:id="@+id/oscilloscope"
+        android:layout_width="match_parent"
+        android:layout_height="255dp"
+        android:background="#404040"
+        android:contentDescription="@string/oscilloscope" >
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/spectrum"
+        android:layout_width="match_parent"
+        android:layout_height="255dp"
+        android:background="#000000"
+        android:contentDescription="@string/spectrum" >
+    </ImageView>
+
+</LinearLayout>
