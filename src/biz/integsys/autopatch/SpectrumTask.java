@@ -47,13 +47,13 @@ public class SpectrumTask implements Runnable {
             
             while(true) {
                 double real[] = spectrum.take();
-                String line = "";
-                for (int x = 0; x < real.length; ++x) 
+                //String line = "";
+                for (int x = 0; x < width-1; ++x) 
                 {
                     paint.setColor(Color.BLACK);
                     canvas.drawLine(x,0, x,height, paint);
                     paint.setColor(Color.WHITE);
-                    canvas.drawPoint(x, height - Math.round(real[x]), paint);
+                    canvas.drawLine(x, height - Math.round(real[x]/10),x+1, height - Math.round(real[x+1]/10), paint);
                     //if (real[x] > .01) line += x+"="+Math.round(real[x]*height)+" ";
                 }
                 //Log.d("AutoPatch", line);

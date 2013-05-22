@@ -34,11 +34,11 @@ public class FFTTask implements Runnable {
             while (true) {
                 short[] sample = spectrum.take(); 
                 for (int i=0; i<blockSize; i++) {
-                    re[i] = sample[i] / 512.0;
+                    re[i] = sample[i]/256;
                     im[i] = 0;
                 }
                 fft.fft(re,im);
-                magnitudes.put(re);
+                magnitudes.put(im);
 
                 if (thread.isInterrupted())
                     break;

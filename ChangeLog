@@ -1,0 +1,3 @@
+2013-05-22  Tim Allen  <tallen@integsys.biz>
+
+    * README: Marine radios don't have DTMF generators looking at Google Speech Input API for Android 

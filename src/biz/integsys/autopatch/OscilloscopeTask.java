@@ -47,14 +47,14 @@ public class OscilloscopeTask implements Runnable {
         try {
             while(true) {
                 short sweep[] = blockingQueue.take();
-                for (int x = 0; x < sweep.length; x++) 
+                for (int x = 0; x < width; x++) 
                 {
                     paint.setColor(Color.BLACK);
                     canvas.drawLine(x,0, x,height, paint);
                     paint.setColor(Color.RED);
                     canvas.drawPoint(x,height/2, paint);
                     paint.setColor(Color.WHITE);
-                    canvas.drawPoint(x, height/2-sweep[x]/128, paint);
+                    canvas.drawPoint(x, height/2-sweep[x]/256, paint);
                 }
                 
                 oscilloscopeView.postInvalidate();

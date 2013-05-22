@@ -1,25 +1,19 @@
-This is an autopatch app for an android phone.
+This is an auto-patch app for an android phone.
 
 The initial goal is to be able to interface to a radio (via audio
-cable) with an HT (e.g. Yaesu VX series) this is simlar to a repeater
-with autopatch capibility.  The motivation is simple, I fly a Hobie 16 
-(type of sailboat) rather agressively (or badly if you like), which
-means I put it over on it's side and ocasionally turtle it--I have 
-drown three smart phones this way.  I have waterproof HTs (Yasu VX7
-and 8) and waterproof marine radios are readily available (do they
-have DTMF generators?).  For various reasons I typically have one of
-those HTs clipped to my life vest.  I want to be able to make phone
-calls from my waterproof radio via my mobile phone which I will leave
-at the boat house, if there's a person doing this they are known as a
-marine opperator (used to be more common) if it's a machine it's called
-an auto-patch.
+cable) with an HT (e.g. Yaesu VX series) this is similar to a repeater
+with auto-patch capability.  The motivation is simple, I fly a Hobie 16 
+(type of sail boat) rather aggressively (or badly if you like), which
+means I put it over on it's side and occasionally turtle it--I have 
+drown three smart phones this way.  I have waterproof HTs (Yaesu VX7
+and 8) and waterproof marine radios are readily available.  For various
+reasons I typically have one of those HTs clipped to my life vest.  I
+want to be able to make phone calls from my waterproof radio via my
+mobile phone which I will leave at the boat house, if there's a person
+doing this they are known as a marine operator (used to be more common)
+if it's a machine it's called an auto-patch.
 
 
-status: not even close yet.
-I am still trying to work out the FFT to interpret the DTMF.  Most HTs
-have DTMF generators and maybe down the road I'll play with speech
-recognition.  Typically it goes something like * up and #down; that is,
-one keys up one's radio, hits the * key, followed by the phone number,
-you talk to your caller in half duplex and when you're done you hit #.
-There are some annoying regulatory issues (e.g. remote secondary control)
-to sort out but they are a low priority for now.
+status: this is still just a research project
+Turns out marine radios don't have DTMF generators (though HTs do).
+I'm looking at using Google's Speech Input API for Android.

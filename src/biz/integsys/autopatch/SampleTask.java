@@ -20,10 +20,10 @@ public class SampleTask implements Runnable {
     private int channelConfiguration = AudioFormat.CHANNEL_IN_MONO;
     private int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
     private int blockSize = 512;
-    private ArrayBlockingQueue<short[]> blockingQueue;
+    private ArrayBlockingQueue<short[]> samples;
     
-    public SampleTask(ArrayBlockingQueue<short[]> blockingQueue) {
-        this.blockingQueue = blockingQueue;
+    public SampleTask(ArrayBlockingQueue<short[]> samples) {
+        this.samples = samples;
         thread = new Thread(this);
         thread.setName("SampleTask");
     }
@@ -33,14 +33,15 @@ public class SampleTask implements Runnable {
         int bufferSize = AudioRecord.getMinBufferSize(frequency, channelConfiguration, audioEncoding);
         AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, frequency, channelConfiguration, audioEncoding, bufferSize);
         try {
-            short[] buffer = new short[blockSize];
+            
             audioRecord.startRecording();
 
             while (true)
-            {
-                audioRecord.read(buffer, 0, blockSize);
-                //for (int t=0; t<blockSize; t++) buffer[t] = (short) (Math.cos(697*4*3.14159* t/blockSize)*32760/2 + Math.cos(1209*4*3.14159* t/blockSize)*32760/2);
-                blockingQueue.put(buffer);
+            {   
+                short[] buffer = new short[blockSize];
+                //audioRecord.read(buffer, 0, blockSize);
+                for (int t=0; t<blockSize; t++) buffer[t] = (short) (Math.cos(440*6.282*(t/blockSize))*32767);// + Math.cos(1209*4*3.14159* t/blockSize)*32760/4);
+                samples.put(buffer);
                 
                 if (thread.isInterrupted())
                     break;
