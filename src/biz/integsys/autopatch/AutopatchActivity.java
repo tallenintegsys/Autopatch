@@ -62,7 +62,7 @@ public class AutopatchActivity extends Activity {
 
         switch (requestCode) {
         case RESULT_SPEECH: {
-            if (resultCode == RESULT_OK && null != data) {
+            if ((resultCode == RESULT_OK) && (data != null)) {
                 ArrayList<String> text = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                 txtText.setText(text.get(0));
             }
