@@ -1,11 +1,17 @@
 package biz.integsys.autopatch;
 
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.ArrayList;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.os.Bundle;
-import android.widget.ImageView;
-import biz.integsys.autopatch.R.id;
+import android.speech.RecognizerIntent;
+import android.view.Menu;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -14,52 +20,55 @@ import biz.integsys.autopatch.R.id;
  * @see SystemUiHider
  */
 public class AutopatchActivity extends Activity {
-    ArrayBlockingQueue<short[]> samples = new ArrayBlockingQueue<short[]>(1);
-    ArrayBlockingQueue<double[]> spectrum = new ArrayBlockingQueue<double[]>(1);
-    SampleTask sampleTask;
-    FFTTask fftTask;
-    ImageView oscilloscopeView;
-    OscilloscopeTask oscilloscopeTask;
-    ImageView spectrumView;
-    SpectrumTask spectrumTask;
-    
-    
+    protected static final int RESULT_SPEECH = 1;
+
+    private Button btnSpeak;
+    private TextView txtText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_autopatch);
-        oscilloscopeView = (ImageView)findViewById(id.oscilloscope);
-        spectrumView = (ImageView)findViewById(id.spectrum);
-        
-        sampleTask = new SampleTask(samples);
-        fftTask = new FFTTask(samples, spectrum);
-        
-        oscilloscopeTask = new OscilloscopeTask(samples, oscilloscopeView);
-        spectrumTask = new SpectrumTask(spectrum, spectrumView);
-    }
-    
-    /* (non-Javadoc)
-     * @see android.app.Activity#onResume()
-     */
-    @Override
-    protected void onResume() {
-        sampleTask.start();
-        fftTask.start();
-        oscilloscopeTask.start();
-        spectrumTask.start();
-        super.onResume();
+        txtText = (TextView) findViewById(R.id.txtText);
+        btnSpeak = (Button) findViewById(R.id.btnSpeak);
+        btnSpeak.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "en-US");
+
+                try {
+                    startActivityForResult(intent, RESULT_SPEECH);
+                    txtText.setText("");
+                } catch (ActivityNotFoundException e) {
+                    Toast t = Toast.makeText(getApplicationContext(),
+                            "Your device doesn't support Speech to Text\n"+e.getMessage(),
+                            Toast.LENGTH_SHORT);
+                    t.show();
+                }
+            }
+        });
     }
 
-    /* (non-Javadoc)
-     * @see android.app.Activity#onPause()
-     */
     @Override
-    protected void onPause() {
-        sampleTask.stop();
-        fftTask.stop();
-        oscilloscopeTask.stop();
-        spectrumTask.stop();
-        super.onPause();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_main, menu);
+        return true;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+        case RESULT_SPEECH: {
+            if (resultCode == RESULT_OK && null != data) {
+                ArrayList<String> text = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                txtText.setText(text.get(0));
+            }
+            break;
+        }
+
+        }
+    }
 }

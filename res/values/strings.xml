@@ -4,7 +4,9 @@
     <string name="app_name">Autopatch</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
-    <string name="oscilloscope"></string>
-    <string name="spectrum"></string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="speak">speak</string>
+    <string name="ptt">PTT</string>
 
 </resources>

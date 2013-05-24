@@ -17,9 +17,7 @@
         <activity
             android:name="biz.integsys.autopatch.AutopatchActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/app_name"
-            
-            android:theme="@style/FullscreenTheme" >
+            android:label="@string/app_name">
             <intent-filter>
                 <!-- android:screenOrientation="portrait" -->
                 <action android:name="android.intent.action.MAIN" />
