@@ -1,12 +1,9 @@
 This is an auto-patch app for an android phone.
 
-This project is on hold, one of the radios is out for repair (my "water-proof"
-VX-7R apears to have water damage, it wasn't even immersed, grrrr.).
-
 The initial goal is to be able to interface to a radio (via audio
 cable) with an HT (e.g. Yaesu VX series) this is similar to a repeater
 with auto-patch capability.  The motivation is simple, I fly a Hobie 16 
-(type of sail boat) rather aggressively (or badly if you like), which
+(type of sail boat) rather aggressively (badly), which
 means I put it over on it's side and occasionally turtle it--I have 
 drown three smart phones this way.  I have waterproof HTs (Yaesu VX7
 and 8) and waterproof marine radios are readily available.  For various
