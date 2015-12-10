@@ -1,5 +1,8 @@
-bin/
-gen/
-local.properties
-*.swp
-tags
+*.iml
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
+/captures
