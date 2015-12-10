@@ -15,5 +15,6 @@ if it's a machine it's called an auto-patch.
 
 
 status: this is still just a research project
-Turns out marine radios don't have DTMF generators (though HTs do).
-I'm looking at using Google's Speech Input API for Android.
+Many proper marine radios have DTMF generators, DTMF is simple
+and familiar to most ham operators and some mariners.
+I'm no longer looking at using Google's Speech Input API for Android.
