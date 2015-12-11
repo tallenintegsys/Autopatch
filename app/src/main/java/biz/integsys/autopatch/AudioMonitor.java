@@ -7,11 +7,12 @@ import android.util.Log;
 
 /**
  * Created by tallen on 12/11/15.
+ * This monitors the mic and sends callbacks based on what it "hears" e.g. DTMFs
  */
 public class AudioMonitor {
-    private AudioRecord audioRecord;
+    private final AudioRecord audioRecord;
     private Thread monitorThread;
-    private float[] recordBuffer = new float[44100];
+    private final float[] recordBuffer = new float[44100];
 
     public AudioMonitor() {
         audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, 44100, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_FLOAT, 44100);

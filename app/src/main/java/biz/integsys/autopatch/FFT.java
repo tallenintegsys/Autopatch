@@ -20,6 +20,10 @@ package biz.integsys.autopatch;
 *
 *  See the file "COPYING" for the text of the license.
 ******************************************************************************/
+/**
+ * Created by tallen on 12/11/15.
+ * I need to rework this to take floats and if I get that sorted then bytes
+ */
 
 class FFT {
 

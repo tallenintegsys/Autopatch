@@ -8,8 +8,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 
 public class MainActivity extends AppCompatActivity {
+    private final AudioMonitor audioMonitor = new AudioMonitor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,8 +29,17 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
-        AudioMonitor audioMonitor = new AudioMonitor();
-        audioMonitor.start();
+
+        Switch enableSwitch = (Switch) findViewById(R.id.enable);
+        enableSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked)
+                    audioMonitor.start();
+                else
+                    audioMonitor.stop();
+            }
+        });
     }
 
     @Override
@@ -48,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
+
 }
