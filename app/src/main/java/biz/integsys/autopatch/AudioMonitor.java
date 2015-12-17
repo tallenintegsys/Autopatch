@@ -13,9 +13,9 @@ public class AudioMonitor {
     private final AudioRecord audioRecord;
     private Thread monitorThread;
     private final float[] recordBuffer = new float[44100];
-    private final double[] re = new double[32768];
-    private double[] im = new double[32768];
-    private final double[] zero = new double[32768];
+    private final float[] re = new float[32768];
+    private float[] im = new float[32768];
+    private final float[] zero = new float[32768];
     private final FFT fft = new FFT(32768);
     private boolean enable;
 
