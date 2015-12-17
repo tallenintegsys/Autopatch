@@ -5,14 +5,23 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
-public class MainActivity extends AppCompatActivity {
-    private final AudioMonitor audioMonitor = new AudioMonitor();
+import com.androidplot.xy.SimpleXYSeries;
+import com.androidplot.xy.XYPlot;
+import com.androidplot.xy.XYSeries;
+
+import java.util.Arrays;
+
+public class MainActivity extends AppCompatActivity implements AudioMonitorListener {
+    private final String TAG = "MainActivity";
+    private final AudioMonitor audioMonitor = new AudioMonitor(this);
+    private XYPlot plot;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        plot = (XYPlot) findViewById(R.id.plot);
+        //XYSeries series1 = new SimpleXYSeries(Arrays.asList(series1Numbers), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "Series1");
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -63,4 +75,8 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void transformedResult(float result[]) {
+        Log.i(TAG, "result: "+result.toString());
+
+    }
 }
