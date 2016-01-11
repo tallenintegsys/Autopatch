@@ -13,7 +13,7 @@ public class AudioMonitor {
     private final String TAG = "AudioMonitor";
     private final AudioRecord audioRecord;
     private Thread monitorThread;
-    private final float[] recordBuffer = new float[44100];
+    private final float[] recordBuffer;
     private final float[] re = new float[32768];
     private float[] im = new float[32768];
     private final float[] zero = new float[32768];
@@ -23,12 +23,19 @@ public class AudioMonitor {
     private AudioMonitorListener listener = null;
 
     public AudioMonitor() {
-        audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, 44100, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_FLOAT, 44100);
+        int recordBufferSize = AudioRecord.getMinBufferSize(44100, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_FLOAT);
+        recordBuffer = new float[recordBufferSize];
+        audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, 44100, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_FLOAT, recordBufferSize);
         ///XXX need to check that permissions were okay etc...
-        int state = audioRecord.getState();
-        Log.d(TAG, "state: " + state);
-        for (int i=0; i < im.length; i++)
-            zero[i]=0; //do i actually need to do this?
+        int state;
+        while ((state = audioRecord.getState()) != AudioRecord.STATE_INITIALIZED) {
+            Log.d(TAG, "AudioRecord state: " + state);
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public AudioMonitor(AudioMonitorListener listener) {

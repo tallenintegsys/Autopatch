@@ -21,7 +21,7 @@
     <com.androidplot.xy.XYPlot
         android:id="@+id/plot"
         android:layout_width="fill_parent"
-        android:layout_height="100dp"
+        android:layout_height="400dp"
         ap:label="frequency amplitude plot"
         ap:rangeLabel="range"
         ap:domainLabel="domain"
