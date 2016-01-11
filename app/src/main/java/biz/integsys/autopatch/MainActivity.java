@@ -6,7 +6,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +24,7 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
     private final String TAG = "MainActivity";
     private final AudioMonitor audioMonitor = new AudioMonitor(this);
     private XYPlot plot;
+    private Number am[] = new Number[AudioMonitor.SAMPLE_SIZE];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +34,9 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
         setSupportActionBar(toolbar);
 
         plot = (XYPlot) findViewById(R.id.plot);
-        XYSeries series1 = new SimpleXYSeries(Arrays.asList(audioMonitor.getAmplitude()), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "bins");
+        XYSeries series1 = new SimpleXYSeries(Arrays.asList(am), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "bins");
 
-        LineAndPointFormatter series1Format = new LineAndPointFormatter(Color.RED, Color.GREEN, Color.BLUE, null);
+        LineAndPointFormatter series1Format = new LineAndPointFormatter(Color.RED, null, null, null);
         plot.addSeries(series1, series1Format);
         plot.setTicksPerRangeLabel(1);
 
@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
         showSampleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                am = audioMonitor.getAmplitude();
                 plot.redraw();
             }
         });
@@ -91,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
     }
 
     public void transformedResult(float result[]) {
-        Log.i(TAG, "result: " + result.toString());
+        //Log.i(TAG, "result: " + result.toString());
 
     }
 

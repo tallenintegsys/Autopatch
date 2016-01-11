@@ -13,7 +13,7 @@
     <Switch
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="enable"
+        android:text="@string/enable"
         android:id="@+id/enable"
         android:layout_centerHorizontal="true"
         android:textSize="80dp" />
@@ -59,10 +59,9 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Show Sample"
+        android:text="@string/show_sample"
         android:id="@+id/showSampleButton"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="42dp"
-        android:onClick="MainActivity.showSample()" />
+        android:layout_marginBottom="42dp" />
 </RelativeLayout>
