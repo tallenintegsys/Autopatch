@@ -17,10 +17,10 @@ public class AudioMonitor {
     private final float[] re = new float[32768];
     private float[] im = new float[32768];
     private final float[] zero = new float[32768];
+    private final Float[] amplitude = new Float[32768];
     private final FFT fft = new FFT(32768);
     private boolean enable;
     private AudioMonitorListener listener = null;
-
 
     public AudioMonitor() {
         audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, 44100, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_FLOAT, 44100);
@@ -63,5 +63,15 @@ public class AudioMonitor {
     public void stop() {
         //monitorThread.interrupt();
         enable = false;
+    }
+
+    public synchronized Float[] getAmplitude() {
+        updateAmplitude();
+        return amplitude;
+    }
+
+    private synchronized void updateAmplitude() {
+        for (int i = 0; i < re.length; i++)
+            amplitude[i] = (float) Math.cos(i/32768);
     }
 }

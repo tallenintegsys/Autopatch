@@ -22,7 +22,7 @@
         android:id="@+id/plot"
         android:layout_width="fill_parent"
         android:layout_height="100dp"
-        ap:label="A Simple XY Plot"
+        ap:label="frequency amplitude plot"
         ap:rangeLabel="range"
         ap:domainLabel="domain"
         ap:borderColor="#000000"
@@ -56,5 +56,13 @@
         android:layout_below="@+id/enable"
         android:layout_alignParentStart="true" />
 
-
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Sample"
+        android:id="@+id/showSampleButton"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="42dp"
+        android:onClick="MainActivity.showSample()" />
 </RelativeLayout>

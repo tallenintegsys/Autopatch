@@ -9,9 +9,12 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
+import com.androidplot.xy.LineAndPointFormatter;
+import com.androidplot.xy.PointLabelFormatter;
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYSeries;
@@ -22,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
     private final String TAG = "MainActivity";
     private final AudioMonitor audioMonitor = new AudioMonitor(this);
     private XYPlot plot;
+    private Float[] am = {1f,2f,3f};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +35,20 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
         setSupportActionBar(toolbar);
 
         plot = (XYPlot) findViewById(R.id.plot);
-        //XYSeries series1 = new SimpleXYSeries(Arrays.asList(series1Numbers), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "Series1");
+        XYSeries series1 = new SimpleXYSeries(Arrays.asList(am), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "Series1");
+        LineAndPointFormatter series1Format = new LineAndPointFormatter();
+        series1Format.setPointLabelFormatter(new PointLabelFormatter());
+        series1Format.configure(getApplicationContext(), R.xml.line_point_formatter_with_labels);
+        plot.addSeries(series1, series1Format);
+        plot.redraw();
+
+        Button showSampleButton = (Button) findViewById(R.id.showSampleButton);
+        showSampleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                plot.redraw();
+            }
+        });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -76,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
     }
 
     public void transformedResult(float result[]) {
-        Log.i(TAG, "result: "+result.toString());
+        Log.i(TAG, "result: " + result.toString());
 
     }
 }
