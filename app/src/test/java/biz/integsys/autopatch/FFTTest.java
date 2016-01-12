@@ -32,14 +32,8 @@ public class FFTTest {
 
     @Test
     public void testFft() throws Exception {
-        /*
-        even though we sample at 44100 we only use 32768 samples due
-        to the 2^x limitation of the algorithm so we're down-sampling
-        */
-        for (int i=0; i < 44100; i++) {
-            int j = i * 32768 / 44100;
-            re[j] = sin[i];
-        }
+
+        System.arraycopy(sin,0,re,0,AudioMonitor.SAMPLE_SIZE);
         System.arraycopy(zero,0,im,0,AudioMonitor.SAMPLE_SIZE);
         Fft.fft(re, im);
         System.out.print("testFft");
@@ -48,7 +42,13 @@ public class FFTTest {
             FileOutputStream fos = new FileOutputStream(file);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fos);
             for (int i = 0; i < re.length; i++) {
-                outputStreamWriter.write(""+sin[i]+", "+im[i]+", "+re[i]+"\n");
+                    /*
+                    even though we sample at 44100 we only use 32768 samples due
+                    to the 2^x limitation of the algorithm so we're down-sampling
+                    it's cheaper, computationally, to just shift the graph
+                    */
+                int j = i * 32768/44100;
+                outputStreamWriter.write("" + sin[j] + ", " + im[j] + ", " + re[j] + "\n");
             }
             outputStreamWriter.close();
             System.out.print("fftTest: "+file.getCanonicalPath());
