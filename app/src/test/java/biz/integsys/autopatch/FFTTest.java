@@ -14,20 +14,33 @@ import java.io.OutputStreamWriter;
  */
 public class FFTTest {
 
+    private final float[] sin = new float[44100];
+    private final float[] zero= new float[44100];
     private final float[] re = new float[AudioMonitor.SAMPLE_SIZE];
     private final float[] im = new float[AudioMonitor.SAMPLE_SIZE];
     private final FFT Fft = new FFT(AudioMonitor.SAMPLE_SIZE);
 
     @Before
     public void setUp() throws Exception {
-        for (int i=0; i < AudioMonitor.SAMPLE_SIZE; i++) {
-            re[i] = (float)Math.sin(440 * i / AudioMonitor.SAMPLE_RATE);
-            im[i] = 0;
+        for (int i=0; i < 44100; i++) {
+            final float f = 5000;
+            sin[i] = (float)Math.sin(f * 2*Math.PI * i / 44100);
+            zero[i] = 0;
+            //System.out.print("re: "+re[i]+"   im:"+im[i]);
         }
     }
 
     @Test
     public void testFft() throws Exception {
+        /*
+        even though we sample at 44100 we only use 32768 samples due
+        to the 2^x limitation of the algorithm so we're down-sampling
+        */
+        for (int i=0; i < 44100; i++) {
+            int j = i * 32768 / 44100;
+            re[j] = sin[i];
+        }
+        System.arraycopy(zero,0,im,0,AudioMonitor.SAMPLE_SIZE);
         Fft.fft(re, im);
         System.out.print("testFft");
         File file = new File("fft.csv");
@@ -35,7 +48,7 @@ public class FFTTest {
             FileOutputStream fos = new FileOutputStream(file);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fos);
             for (int i = 0; i < re.length; i++) {
-                outputStreamWriter.write("" + im[i] + ", " + re[i] + "\n");
+                outputStreamWriter.write(""+sin[i]+", "+im[i]+", "+re[i]+"\n");
             }
             outputStreamWriter.close();
             System.out.print("fftTest: "+file.getCanonicalPath());
