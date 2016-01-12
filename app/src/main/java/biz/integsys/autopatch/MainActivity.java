@@ -1,6 +1,5 @@
 package biz.integsys.autopatch;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,18 +12,10 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
-import com.androidplot.xy.LineAndPointFormatter;
-import com.androidplot.xy.SimpleXYSeries;
-import com.androidplot.xy.XYPlot;
-import com.androidplot.xy.XYSeries;
-
-import java.util.Arrays;
-
 public class MainActivity extends AppCompatActivity implements AudioMonitorListener {
     private final String TAG = "MainActivity";
     private final AudioMonitor audioMonitor = new AudioMonitor(this);
-    private XYPlot plot;
-    private Number am[] = new Number[AudioMonitor.SAMPLE_SIZE];
+    private float[] am = new float[AudioMonitor.SAMPLE_SIZE];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,19 +24,19 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        plot = (XYPlot) findViewById(R.id.plot);
-        XYSeries series1 = new SimpleXYSeries(Arrays.asList(am), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "bins");
-
-        LineAndPointFormatter series1Format = new LineAndPointFormatter(Color.RED, null, null, null);
-        plot.addSeries(series1, series1Format);
-        plot.setTicksPerRangeLabel(1);
-
         Button showSampleButton = (Button) findViewById(R.id.showSampleButton);
         showSampleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                am = audioMonitor.getAmplitude();
-                plot.redraw();
+                new Thread (new Runnable() {
+                    @Override
+                    public void run() {
+                        am = audioMonitor.getAmplitude();
+                        //XXX do some things
+                    }
+                }).run();
+
+
             }
         });
 
@@ -95,12 +86,5 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
         //Log.i(TAG, "result: " + result.toString());
 
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        plot.redraw();
-    }
-
 
 }

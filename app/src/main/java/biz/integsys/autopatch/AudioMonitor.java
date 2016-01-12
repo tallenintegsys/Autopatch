@@ -20,7 +20,7 @@ class AudioMonitor {
     private final float[] re = new float[SAMPLE_SIZE];
     private float[] im = new float[SAMPLE_SIZE];
     private final float[] zero = new float[SAMPLE_SIZE];
-    private final Float[] amplitude = new Float[SAMPLE_SIZE];
+    private final float[] amplitude = new float[SAMPLE_SIZE];
     private final FFT fft = new FFT(SAMPLE_SIZE);
     private boolean enable;
     private AudioMonitorListener listener = null;
@@ -72,7 +72,7 @@ class AudioMonitor {
         enable = false;
     }
 
-    public synchronized Float[] getAmplitude() {
+    public synchronized float[] getAmplitude() {
         updateAmplitude();
         return amplitude;
     }
