@@ -2,6 +2,7 @@ package biz.integsys.autopatch;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -16,12 +17,22 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
+import com.androidplot.xy.BoundaryMode;
+import com.androidplot.xy.LineAndPointFormatter;
+import com.androidplot.xy.SimpleXYSeries;
+import com.androidplot.xy.XYPlot;
+import com.androidplot.xy.XYSeries;
+
+import java.util.Arrays;
+
 public class MainActivity extends AppCompatActivity implements AudioMonitorListener {
     private final String TAG = "MainActivity";
     private AudioMonitor audioMonitor= new AudioMonitor(this);
-    private float[] am = new float[AudioMonitor.SAMPLE_SIZE];
+    private Number[] am = new Number[AudioMonitor.BUFFER_SIZE];
     private static final int RECORD_AUDIO_PERMISSION = 1;
     private Switch enableSwitch;
+    private XYPlot plot;
+    private LineAndPointFormatter series1Format;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +43,19 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},RECORD_AUDIO_PERMISSION);
         }
+        audioMonitor.init();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        plot = (XYPlot) findViewById(R.id.plot);
+        series1Format = new LineAndPointFormatter(Color.RED, null, null, null);
+        plot.setUserRangeOrigin(0);
+        plot.setRangeBoundaries(-10,10, BoundaryMode.FIXED);
+        plot.getGraphWidget().setDomainLabelOrientation(45);
+        plot.getGraphWidget().setDomainTickLabelHorizontalOffset(15);
+        plot.getGraphWidget().setDomainTickLabelVerticalOffset(15);
+        plot.getLegendWidget().setVisible(false);
 
         Button showSampleButton = (Button) findViewById(R.id.showSampleButton);
         showSampleButton.setOnClickListener(new View.OnClickListener() {
@@ -44,7 +65,9 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
                     @Override
                     public void run() {
                         am = audioMonitor.getAmplitude();
-                        //XXX do some things
+                        XYSeries series1 = new SimpleXYSeries(Arrays.asList(am),
+                                SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "Series1");
+                        plot.addSeries(series1, series1Format);
                     }
                 }).run();
             }

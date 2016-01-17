@@ -18,16 +18,15 @@ class AudioMonitor {
     private final String TAG = "AudioMonitor";
     private AudioRecord audioRecord;
     private Thread monitorThread;
-    public static final int BUFFER_SIZE = 44100;
-    public static final int SAMPLE_SIZE = 32768;
+    public static final int BUFFER_SIZE = 4096;
     public static final int SAMPLE_RATE = 44100;
     public static final int STATE_INITIALIZED = AudioRecord.STATE_INITIALIZED;
     private final float[] recordBuffer= new float[BUFFER_SIZE];
-    private final float[] re = new float[SAMPLE_SIZE];
-    private float[] im = new float[SAMPLE_SIZE];
-    private final float[] zero = new float[SAMPLE_SIZE];
-    private final float[] amplitude = new float[SAMPLE_SIZE];
-    private final FFT fft = new FFT(SAMPLE_SIZE);
+    private final float[] re = new float[BUFFER_SIZE];
+    private float[] im = new float[BUFFER_SIZE];
+    private final float[] zero = new float[BUFFER_SIZE];
+    private final Number[] amplitude = new Number[BUFFER_SIZE];
+    private final FFT fft = new FFT(BUFFER_SIZE);
     private boolean enable;
     private AudioMonitorListener listener = null;
 
@@ -50,12 +49,12 @@ class AudioMonitor {
                     int read = audioRecord.read(recordBuffer, 0, BUFFER_SIZE, AudioRecord.READ_BLOCKING);
                     Log.d(TAG, "read " + read + " floats.");
                     im = zero.clone(); //memset, I hope?
-                    System.arraycopy(recordBuffer, 0, re, 0, SAMPLE_SIZE); //memset, I presume
+                    System.arraycopy(recordBuffer, 0, re, 0, BUFFER_SIZE); //memset, I presume
                     fft.fft(re, im);
                     if (listener != null)
                         listener.transformedResult(re);
                 } while (enable);
-                for (int i = 0; i < SAMPLE_SIZE; i++) {
+                for (int i = 0; i < BUFFER_SIZE; i++) {
                     if ((Math.abs(im[i]) > 1000) || (Math.abs(re[i]) > 1000))
                         Log.v(TAG, "i="+i+"   x="+ im[i]+"   y="+ re[i]);
                     audioRecord.stop();
@@ -69,13 +68,13 @@ class AudioMonitor {
         enable = false;
     }
 
-    public synchronized float[] getAmplitude() {
+    public synchronized Number[] getAmplitude() {
         updateAmplitude();
         return amplitude;
     }
 
     private synchronized void updateAmplitude() {
         for (int i = 0; i < re.length; i++)
-            amplitude[i] = (float) Math.cos(i/ SAMPLE_SIZE);
+            amplitude[i] = (float) Math.cos(i/ BUFFER_SIZE);
     }
 }
