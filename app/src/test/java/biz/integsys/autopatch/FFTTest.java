@@ -16,9 +16,9 @@ public class FFTTest {
 
     private final float[] sin = new float[44100];
     private final float[] zero= new float[44100];
-    private final float[] re = new float[AudioMonitor.SAMPLE_SIZE];
-    private final float[] im = new float[AudioMonitor.SAMPLE_SIZE];
-    private final FFT Fft = new FFT(AudioMonitor.SAMPLE_SIZE);
+    private final float[] re = new float[AudioMonitor.BUFFER_SIZE];
+    private final float[] im = new float[AudioMonitor.BUFFER_SIZE];
+    private final FFT Fft = new FFT(AudioMonitor.BUFFER_SIZE);
 
     @Before
     public void setUp() throws Exception {
@@ -33,8 +33,8 @@ public class FFTTest {
     @Test
     public void testFft() throws Exception {
 
-        System.arraycopy(sin,0,re,0,AudioMonitor.SAMPLE_SIZE);
-        System.arraycopy(zero,0,im,0,AudioMonitor.SAMPLE_SIZE);
+        System.arraycopy(sin,0,re,0,AudioMonitor.BUFFER_SIZE);
+        System.arraycopy(zero,0,im,0,AudioMonitor.BUFFER_SIZE);
         Fft.fft(re, im);
         System.out.print("testFft");
         File file = new File("fft.csv");
@@ -61,7 +61,7 @@ public class FFTTest {
     @After
     public void tearDown() throws Exception {
         /*
-    for (int i=0; i < AudioMonitor.SAMPLE_SIZE; i++)
+    for (int i=0; i < AudioMonitor.BUFFER_SIZE; i++)
         System.out.print("i: " + i + "   re: " + re[i] + "   im: " + im[i]+"\n");
 */
     }
