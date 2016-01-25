@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 
 /**
- * Created by jshoop on 1/9/16.
+ * Created by tallen on 1/9/16.
  */
 public class FFTTest {
 
