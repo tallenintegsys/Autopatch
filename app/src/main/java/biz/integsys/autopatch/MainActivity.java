@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -131,8 +132,8 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
             }
         }
     }
-    public void transformedResult(float result[]) {
-        //Log.i(TAG, "result: " + result.toString());
+    public void transformedResult(char dtmf) {
+        Log.i(TAG, "result: " + dtmf);
 
     }
 
