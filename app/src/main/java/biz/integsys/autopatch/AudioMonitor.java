@@ -22,7 +22,7 @@ class AudioMonitor {
     private final float[] zero = new float[BUFFER_SIZE];
     private final Number[] amplitude = new Number[BUFFER_SIZE];
     private final FFT fft = new FFT(BUFFER_SIZE);
-    private boolean enable;
+    private volatile boolean enable;
     private AudioMonitorListener listener = null;
 
     public AudioMonitor(AudioMonitorListener listener) {
