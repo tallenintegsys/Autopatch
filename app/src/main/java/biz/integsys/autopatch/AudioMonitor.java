@@ -24,6 +24,8 @@ class AudioMonitor {
     private final FFT fft = new FFT(BUFFER_SIZE);
     private volatile boolean enable;
     private AudioMonitorListener listener = null;
+    public enum LF {F697, F770, F852, F941};
+    public enum HF {F1209, F1336, F1477, F1633};
 
     public AudioMonitor(AudioMonitorListener listener) {
         this.listener = listener;
@@ -40,6 +42,7 @@ class AudioMonitor {
         audioRecord.startRecording();
         monitorThread = new Thread(new Runnable() {
             public void run() {
+                char lastDtmf = ' ';
                 do {
                     int read = audioRecord.read(recordBuffer, 0, BUFFER_SIZE, AudioRecord.READ_BLOCKING);
                     //Log.d(TAG, "read " + read + " floats.");
@@ -47,8 +50,8 @@ class AudioMonitor {
                     System.arraycopy(recordBuffer, 0, re, 0, BUFFER_SIZE); //memset, I presume
                     fft.fft(re, im);
                     int f1 = 0, f2 = 0;
+                    char dtmf = ' ';
                     for (int i = 0; i < BUFFER_SIZE/2; i++) {
-                        char dtmf = ' ';
                         if ((Math.abs(im[i]) > 300)) {
                             if ((i > 258) && (i < 261))
                                 f1 = 697;
@@ -66,44 +69,49 @@ class AudioMonitor {
                                 f2 = 1477;
                             if ((i > 605) && (i < 608))
                                 f2 = 1633;
-                            if ((f1==697) && (f2==1209))
+                            if ((f1 == 697) && (f2 == 1209))
                                 dtmf = '1';
-                            if ((f1==697) && (f2==1336))
+                            if ((f1 == 697) && (f2 == 1336))
                                 dtmf = '2';
-                            if ((f1==697) && (f2==1477))
+                            if ((f1 == 697) && (f2 == 1477))
                                 dtmf = '3';
-                            if ((f1==697) && (f2==1633))
+                            if ((f1 == 697) && (f2 == 1633))
                                 dtmf = 'A';
-                            if ((f1==770) && (f2==1209))
+                            if ((f1 == 770) && (f2 == 1209))
                                 dtmf = '4';
-                            if ((f1==770) && (f2==1336))
+                            if ((f1 == 770) && (f2 == 1336))
                                 dtmf = '5';
-                            if ((f1==770) && (f2==1477))
+                            if ((f1 == 770) && (f2 == 1477))
                                 dtmf = '6';
-                            if ((f1==770) && (f2==1633))
+                            if ((f1 == 770) && (f2 == 1633))
                                 dtmf = 'B';
-                            if ((f1==852) && (f2==1209))
+                            if ((f1 == 852) && (f2 == 1209))
                                 dtmf = '7';
-                            if ((f1==852) && (f2==1336))
+                            if ((f1 == 852) && (f2 == 1336))
                                 dtmf = '8';
-                            if ((f1==852) && (f2==1477))
+                            if ((f1 == 852) && (f2 == 1477))
                                 dtmf = '9';
-                            if ((f1==852) && (f2==1633))
+                            if ((f1 == 852) && (f2 == 1633))
                                 dtmf = 'C';
-                            if ((f1==941) && (f2==1209))
+                            if ((f1 == 941) && (f2 == 1209))
                                 dtmf = '*';
-                            if ((f1==941) && (f2==1336))
+                            if ((f1 == 941) && (f2 == 1336))
                                 dtmf = '0';
-                            if ((f1==941) && (f2==1477))
+                            if ((f1 == 941) && (f2 == 1477))
                                 dtmf = '#';
-                            if ((f1==941) && (f2==1633))
+                            if ((f1 == 941) && (f2 == 1633))
                                 dtmf = 'D';
-                            if (dtmf != ' ')
-                                if (listener != null)
-                                    listener.transformedResult(dtmf);
-
-                            //Log.v(TAG, "i=" + i + "   " + dtmf);
                         }
+                    }
+                    if (dtmf == ' ') {
+                        lastDtmf = ' ';
+                    } else {
+                        if (listener != null)
+                            if (dtmf != lastDtmf) {
+                                lastDtmf = dtmf;
+                                listener.transformedResult(dtmf);
+                            }
+                        //Log.v(TAG, "i=" + i + "   " + dtmf);
                     }
                 } while (enable);
                 audioRecord.stop();
@@ -115,32 +123,4 @@ class AudioMonitor {
     public void stop() {
         enable = false;
     }
-
-    public synchronized Number[] getAmplitude() {
-        updateAmplitude();
-        return amplitude;
-    }
-
-    private synchronized void updateAmplitude() {
-        for (int i = 0; i < re.length; i++)
-            amplitude[i] = (float) Math.cos(i/BUFFER_SIZE);
-    }
-/*DTMFs
-            1 	697 	1209 Hz
-            2 	697 	1336
-            3 	697 	1477
-            A 	697 	1633
-            4 	770 	1209
-            5 	770 	1336
-            6 	770 	1477
-            B 	770 	1633
-            7 	852 	1209
-            8 	852 	1336
-            9 	852 	1477
-            C 	852 	1633
-            * 	941 	1209
-            0 	941 	1336
-            # 	941 	1477
-            D 	941 	1633
-            */
 }
