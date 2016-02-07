@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.XYPlot;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
     private String dialString;
     private java.util.Timer idleTimeout;
     private java.util.Timer waitTimeout;
+    private TextView stateView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
                     audioMonitor.stop();
             }
         });
-//        enableSwitch.setChecked(true); //XXX for development only
+        stateView = (TextView) findViewById(R.id.state);
 
         int recordAudioPermCheck = ContextCompat.checkSelfPermission(
                 this, Manifest.permission.RECORD_AUDIO);
@@ -111,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
         }
     }
 
+
     /**
      * Finite state machine which can only change state vis-a-vie DTMFs or timeouts
      * @param dtmf
@@ -119,6 +122,17 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
     public void receivedDTMF(char dtmf) {
 
         Log.i(TAG, "result: " + dtmf);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                stateView.setText(state.toString());
+            }
+        });
+        if (dtmf == '#') { // '#' resets to idle state
+            state = state.IDLE;
+            idleTimeout.cancel();
+            // TODO: ring-off if in a call
+        }
         switch (state) {
             case IDLE:
                 dialString = "";
@@ -132,7 +146,6 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
                 }, 10000);
                 break;
             case WAITPHONENUM:
-                if (dtmf == '#') state = state.IDLE;
                 if ((dtmf >= '0') && (dtmf <= '9'))
                     dialString += dtmf;
                 if (dialString.length() == 7) {
@@ -151,10 +164,5 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
                 break;
 
         }
-        if (dtmf == '*') {
-
-        }
-
     }
-
 }
