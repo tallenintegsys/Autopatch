@@ -15,6 +15,5 @@
         android:layout_height="wrap_content"
         android:text="@string/enable"
         android:id="@+id/enable"
-        android:layout_centerHorizontal="true"/>
-
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

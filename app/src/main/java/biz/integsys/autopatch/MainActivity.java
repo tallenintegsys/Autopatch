@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
                     audioMonitor.stop();
             }
         });
+        enableSwitch.setChecked(true); //XXX for development only
     }
 
     @Override

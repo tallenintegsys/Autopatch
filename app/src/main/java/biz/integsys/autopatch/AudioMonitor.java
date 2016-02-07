@@ -60,8 +60,7 @@ class AudioMonitor {
                     int f1 = 0, f2 = 0;
                     char dtmf = ' ';
                     for (int i = 0; i < BUFFER_SIZE/2; i++) {
-                        //XXX this level doesn't work on all devices e.g. Pixel c
-                        if ((Math.abs(im[i]) > 300)) {
+                        if ((Math.abs(im[i]) > 10)) {
                             if ((i > 258) && (i < 261))
                                 f1 = 697;
                             if ((i > 285) && (i < 289))
