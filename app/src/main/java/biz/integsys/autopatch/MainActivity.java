@@ -18,15 +18,23 @@ import android.widget.Switch;
 import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.XYPlot;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class MainActivity extends AppCompatActivity implements AudioMonitorListener {
     private final String TAG = "MainActivity";
-    private AudioMonitor audioMonitor= new AudioMonitor(this);
+    private AudioMonitor audioMonitor = new AudioMonitor(this);
     private Number[] am = new Number[AudioMonitor.BUFFER_SIZE];
     private static final int RECORD_AUDIO_PERMISSION = 1;
     private static final int CALL_PHONE_PERMISSION = 2;
     private Switch enableSwitch;
     private XYPlot plot;
     private LineAndPointFormatter series1Format;
+    private enum State {IDLE, WAITPHONENUM, INCALL};
+    private State state = State.IDLE;
+    private String dialString;
+    private java.util.Timer idleTimeout;
+    private java.util.Timer waitTimeout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +53,12 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
         });
 //        enableSwitch.setChecked(true); //XXX for development only
 
-        int recordAudioPermCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
+        int recordAudioPermCheck = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.RECORD_AUDIO);
         if (recordAudioPermCheck != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.RECORD_AUDIO,Manifest.permission.CALL_PHONE},
+                    new String[]{Manifest.permission.RECORD_AUDIO,
+                            Manifest.permission.CALL_PHONE},
                     RECORD_AUDIO_PERMISSION);
         }
         audioMonitor.init();
@@ -96,17 +106,53 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
                     // permission was granted
                     callPerm = true;
                 }
-
                 enableSwitch.setEnabled(recordPerm && callPerm);
             }
         }
     }
+
+    /**
+     * Finite state machine which can only change state vis-a-vie DTMFs or timeouts
+     * @param dtmf
+     * DTMFs received by the AudioMonitor
+     */
     public void receivedDTMF(char dtmf) {
+
         Log.i(TAG, "result: " + dtmf);
+        switch (state) {
+            case IDLE:
+                dialString = "";
+                if (dtmf == '*') state = state.WAITPHONENUM;
+                idleTimeout = new Timer();
+                idleTimeout.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        state = state.IDLE;
+                    }
+                }, 10000);
+                break;
+            case WAITPHONENUM:
+                if (dtmf == '#') state = state.IDLE;
+                if ((dtmf >= '0') && (dtmf <= '9'))
+                    dialString += dtmf;
+                if (dialString.length() == 7) {
+                    Uri number = Uri.parse("tel:"+dialString);
+                    Intent callIntent = new Intent(Intent.ACTION_CALL, number);
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                        // TODO: Figure out how to get AS to stop bitching and remove this
+                        return;
+                    }
+                    startActivity(callIntent); //TODO: AFAIK one cannot get here w/o the permissions
+                    state = State.INCALL;
+                }
+                break;
+            case INCALL:
+                // XXX: Time to get my telephony manager on
+                break;
+
+        }
         if (dtmf == '*') {
-            Uri number = Uri.parse("tel:5024101348");
-            Intent callIntent = new Intent(Intent.ACTION_CALL, number);
-            startActivity(callIntent);
+
         }
 
     }
