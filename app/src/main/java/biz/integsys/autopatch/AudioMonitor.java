@@ -3,7 +3,6 @@ package biz.integsys.autopatch;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
-import android.util.Log;
 
 /**
  * Created by tallen on 12/11/15.
@@ -117,7 +116,7 @@ class AudioMonitor {
                         if (listener != null)
                             if (dtmf != lastDtmf) {
                                 lastDtmf = dtmf;
-                                listener.transformedResult(dtmf);
+                                listener.receivedDTMF(dtmf);
                             }
                     }
                 } while (enable);

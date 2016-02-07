@@ -1,7 +1,9 @@
 package biz.integsys.autopatch;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -21,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
     private AudioMonitor audioMonitor= new AudioMonitor(this);
     private Number[] am = new Number[AudioMonitor.BUFFER_SIZE];
     private static final int RECORD_AUDIO_PERMISSION = 1;
+    private static final int CALL_PHONE_PERMISSION = 2;
     private Switch enableSwitch;
     private XYPlot plot;
     private LineAndPointFormatter series1Format;
@@ -29,15 +32,6 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},RECORD_AUDIO_PERMISSION);
-        }
-        audioMonitor.init();
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         enableSwitch = (Switch) findViewById(R.id.enable);
         enableSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -49,7 +43,19 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
                     audioMonitor.stop();
             }
         });
-        enableSwitch.setChecked(true); //XXX for development only
+//        enableSwitch.setChecked(true); //XXX for development only
+
+        int recordAudioPermCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
+        if (recordAudioPermCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.RECORD_AUDIO,Manifest.permission.CALL_PHONE},
+                    RECORD_AUDIO_PERMISSION);
+        }
+        audioMonitor.init();
+
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
     }
 
     @Override
@@ -75,21 +81,33 @@ public class MainActivity extends AppCompatActivity implements AudioMonitorListe
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        boolean recordPerm = false;
+        boolean callPerm = false;
         switch (requestCode) {
             case RECORD_AUDIO_PERMISSION: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted
+                    recordPerm = true;
                     audioMonitor.init();
-                } else {
-                    // permission denied
-                    enableSwitch.setEnabled(false);
                 }
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 1 && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted
+                    callPerm = true;
+                }
+
+                enableSwitch.setEnabled(recordPerm && callPerm);
             }
         }
     }
-    public void transformedResult(char dtmf) {
+    public void receivedDTMF(char dtmf) {
         Log.i(TAG, "result: " + dtmf);
+        if (dtmf == '*') {
+            Uri number = Uri.parse("tel:5024101348");
+            Intent callIntent = new Intent(Intent.ACTION_CALL, number);
+            startActivity(callIntent);
+        }
 
     }
 
