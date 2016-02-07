@@ -12,46 +12,55 @@ import android.util.Log;
 class AudioMonitor {
     private final String TAG = "AudioMonitor";
     private AudioRecord audioRecord;
-    private Thread monitorThread;
     public static final int BUFFER_SIZE = 16384;
-    public static final int SAMPLE_RATE = 44100;
+    private static final int SAMPLE_RATE = 44100;
     public static final int STATE_INITIALIZED = AudioRecord.STATE_INITIALIZED;
     private final float[] recordBuffer= new float[BUFFER_SIZE];
     private final float[] re = new float[BUFFER_SIZE];
     private float[] im = new float[BUFFER_SIZE];
     private final float[] zero = new float[BUFFER_SIZE];
-    private final Number[] amplitude = new Number[BUFFER_SIZE];
     private final FFT fft = new FFT(BUFFER_SIZE);
     private volatile boolean enable;
     private AudioMonitorListener listener = null;
-    public enum LF {F697, F770, F852, F941};
-    public enum HF {F1209, F1336, F1477, F1633};
 
+    /**
+     * This class monitors the mic and sends any DTMFs it hears to the listener.
+     * @param listener
+     * will be called with any DTMFs received
+     */
     public AudioMonitor(AudioMonitorListener listener) {
         this.listener = listener;
     }
 
+    /**
+     * varify we can get access to the mic
+     * @return
+     * STATE_INITIALIZED on success
+     */
     public int init() {
         audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE,
                 AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_FLOAT, BUFFER_SIZE);
         return audioRecord.getState();
     }
 
+    /**
+     * Begin monitoring the mic for DTMF tones
+     */
     public void start() {
         enable = true;
         audioRecord.startRecording();
-        monitorThread = new Thread(new Runnable() {
+        Thread monitorThread = new Thread(new Runnable() {
             public void run() {
                 char lastDtmf = ' ';
                 do {
-                    int read = audioRecord.read(recordBuffer, 0, BUFFER_SIZE, AudioRecord.READ_BLOCKING);
-                    //Log.d(TAG, "read " + read + " floats.");
+                    audioRecord.read(recordBuffer, 0, BUFFER_SIZE, AudioRecord.READ_BLOCKING);
                     im = zero.clone(); //memset, I hope?
                     System.arraycopy(recordBuffer, 0, re, 0, BUFFER_SIZE); //memset, I presume
                     fft.fft(re, im);
                     int f1 = 0, f2 = 0;
                     char dtmf = ' ';
                     for (int i = 0; i < BUFFER_SIZE/2; i++) {
+                        //XXX this level doesn't work on all devices e.g. Pixel c
                         if ((Math.abs(im[i]) > 300)) {
                             if ((i > 258) && (i < 261))
                                 f1 = 697;
@@ -111,7 +120,6 @@ class AudioMonitor {
                                 lastDtmf = dtmf;
                                 listener.transformedResult(dtmf);
                             }
-                        //Log.v(TAG, "i=" + i + "   " + dtmf);
                     }
                 } while (enable);
                 audioRecord.stop();
@@ -120,6 +128,9 @@ class AudioMonitor {
         monitorThread.start();
     }
 
+    /**
+     * stops listening to the mic
+     */
     public void stop() {
         enable = false;
     }
